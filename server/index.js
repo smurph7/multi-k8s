@@ -18,7 +18,7 @@ const pgClient = new Pool({
   password: keys.pgPassword,
   port: keys.pgPort
 });
-pgClient.on('error', () => console.oog('Lost PG connection'));
+pgClient.on('error', () => console.log('Lost PG connection'));
 
 pgClient
   .query('CREATE TABLE IF NOT EXISTS values (number INT)')
@@ -33,13 +33,15 @@ const redisClient = redis.createClient({
 });
 const redisPublisher = redisClient.duplicate();
 
-// Express Route Handlers
+// Express route handlers
+
 app.get('/', (req, res) => {
   res.send('Hi');
 });
 
 app.get('/values/all', async (req, res) => {
   const values = await pgClient.query('SELECT * from values');
+
   res.send(values.rows);
 });
 
@@ -56,7 +58,7 @@ app.post('/values', async (req, res) => {
     return res.status(422).send('Index too high');
   }
 
-  redisClient.hset('values', index, 'Nothing yet');
+  redisClient.hset('values', index, 'Nothing yet!');
   redisPublisher.publish('insert', index);
   pgClient.query('INSERT INTO values(number) VALUES($1)', [index]);
 
