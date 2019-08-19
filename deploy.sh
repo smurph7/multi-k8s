@@ -5,6 +5,6 @@ docker push smurphy7/multi-client
 docker push smurphy7/multi-server
 docker push smurphy7/multi-worker
 kubectl apply -f k8s
-kubectl rollout restart deployment/client-deployment
-kubectl rollout restart deployment/server-deployment
-kubectl rollout restart deployment/worker-deployment
+kubectl rollout restart deployment client-deployment
+kubectl rollout restart deployment server-deployment
+kubectl rollout restart deployment worker-deployment
