@@ -6,4 +6,18 @@ before_install:
   - curl https://sdk.cloud.google.com | bash > /dev/null; # Download and install google cloud SDK
   - source $HOME/google-cloud-sdk/path.bash.inc
   - gcloud components update kubectl # install and update kubectl in travis
-  - gcloud auth activate-service-account --key-file service-account.json # Authorise glcoud using service-account.json
+  - gcloud auth activate-service-account --key-file service-account.json # Authorise glcoud using service-account.json from first step
+  - gcloud config set project multi-k8s-250303 # set which project to use
+  - gcloud config set compute/zone australia-southeast1-a # set zone used in GC
+  - gcloud container clusters get-credentials multi-cluster # what cluster to work with when given k8s cmds
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin # Login to Docker
+  - docker build -t smurphy7/react-test -f ./client/Dockerfile.dev ./client # build client dev dockerfile
+
+script:
+  - docker run -e CI=true smurphy7/react-test npm run test # run tests
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh # use deploy file
+  on:
+    branch: master
